@@ -1,9 +1,12 @@
+import type { WaitCategoryKey } from "@/lib/categories";
+
 export type SessionStatus = "active" | "finished";
 
 export interface WaitingSession {
   id: string;
   source: "viewer" | "mock";
   status: SessionStatus;
+  categoryKey?: WaitCategoryKey;
   message: string;
   finalMessage?: string;
   startedAt: string;

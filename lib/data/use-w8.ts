@@ -2,7 +2,10 @@
 
 import { useCallback, useEffect, useState } from "react";
 
-import { getW8Repository } from "@/lib/data/w8-repository";
+import {
+  getW8Repository,
+  type CreateSessionInput
+} from "@/lib/data/w8-repository";
 import type { ViewerSnapshot } from "@/lib/types/w8";
 
 export function useW8() {
@@ -16,8 +19,8 @@ export function useW8() {
     refresh();
   }, [refresh]);
 
-  const createSession = useCallback((message: string) => {
-    const next = getW8Repository().createSession(message);
+  const createSession = useCallback((input: CreateSessionInput) => {
+    const next = getW8Repository().createSession(input);
     setSnapshot(next);
     return next;
   }, []);

@@ -1,5 +1,7 @@
 "use client";
 
+import { getWaitCategory } from "@/lib/categories";
+import type { WaitCategoryKey } from "@/lib/categories";
 import { buildMockSessions } from "@/lib/data/mock-sessions";
 import type {
   FeedSections,
@@ -16,9 +18,14 @@ type PersistedState = {
   history: WaitingSession[];
 };
 
+export interface CreateSessionInput {
+  message: string;
+  categoryKey: WaitCategoryKey;
+}
+
 export interface W8Repository {
   getSnapshot(): ViewerSnapshot;
-  createSession(message: string): ViewerSnapshot;
+  createSession(input: CreateSessionInput): ViewerSnapshot;
   finishSession(finalMessage: string): ViewerSnapshot;
 }
 
@@ -248,7 +255,7 @@ function createLocalRepository(): W8Repository {
     getSnapshot() {
       return buildSnapshot(loadState());
     },
-    createSession(message) {
+    createSession({ message, categoryKey }) {
       const current = loadState();
 
       if (current.activeSession) {
@@ -256,7 +263,10 @@ function createLocalRepository(): W8Repository {
       }
 
       const safeMessage = ensureShortText(message, MAX_MESSAGE_LENGTH);
-      const moodTags = deriveMoodTags(safeMessage);
+      const category = getWaitCategory(categoryKey);
+      const moodTags = Array.from(
+        new Set([...category.tags, ...deriveMoodTags(safeMessage)])
+      );
 
       const nextState: PersistedState = {
         ...current,
@@ -264,6 +274,7 @@ function createLocalRepository(): W8Repository {
           id: `viewer-${Date.now()}`,
           source: "viewer",
           status: "active",
+          categoryKey,
           message: safeMessage,
           startedAt: new Date().toISOString(),
           moodTags,

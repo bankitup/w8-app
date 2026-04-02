@@ -44,7 +44,14 @@ export function getWaitCategory(key: WaitCategoryKey): WaitCategoryMeta {
   return WAIT_CATEGORIES.find((category) => category.key === key) ?? WAIT_CATEGORIES[0];
 }
 
-export function resolveWaitCategory(tags: string[]): WaitCategoryMeta {
+export function resolveWaitCategory(
+  tags: string[],
+  categoryKey?: WaitCategoryKey
+): WaitCategoryMeta {
+  if (categoryKey) {
+    return getWaitCategory(categoryKey);
+  }
+
   const match = WAIT_CATEGORIES.find((category) =>
     category.tags.some((tag) => tags.includes(tag))
   );

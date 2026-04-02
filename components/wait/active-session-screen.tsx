@@ -48,7 +48,7 @@ export function ActiveSessionScreen() {
 
   const sectionMap = useMemo(() => snapshot?.feed ?? null, [snapshot]);
   const activeCategory = activeSession
-    ? resolveWaitCategory(activeSession.moodTags)
+    ? resolveWaitCategory(activeSession.moodTags, activeSession.categoryKey)
     : null;
 
   async function handleFinish(message: string) {

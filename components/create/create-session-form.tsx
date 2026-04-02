@@ -16,7 +16,11 @@ import {
   CardTitle
 } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { CREATE_CATEGORY_PRESETS, getWaitCategory } from "@/lib/categories";
+import {
+  CREATE_CATEGORY_PRESETS,
+  getWaitCategory,
+  type WaitCategoryKey
+} from "@/lib/categories";
 import { useW8 } from "@/lib/data/use-w8";
 import { formatStartedLabel } from "@/lib/time";
 
@@ -26,6 +30,7 @@ export function CreateSessionForm() {
   const router = useRouter();
   const { snapshot, isLoading, createSession } = useW8();
   const [message, setMessage] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<WaitCategoryKey | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -35,10 +40,19 @@ export function CreateSessionForm() {
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
+
+    if (!selectedCategory) {
+      setError("Выбери, к чему ближе это ожидание.");
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
-      createSession(message);
+      createSession({
+        message,
+        categoryKey: selectedCategory
+      });
       router.push("/wait");
     } catch (submissionError) {
       setError(
@@ -91,7 +105,17 @@ export function CreateSessionForm() {
                   {CREATE_CATEGORY_PRESETS.map((key) => {
                     const category = getWaitCategory(key);
 
-                    return <CategoryChip key={key} category={category} />;
+                    return (
+                      <CategoryChip
+                        key={key}
+                        category={category}
+                        selected={selectedCategory === key}
+                        onSelect={(nextCategory) => {
+                          setSelectedCategory(nextCategory.key);
+                          setError(null);
+                        }}
+                      />
+                    );
                   })}
                 </div>
               </CardHeader>
@@ -117,12 +141,14 @@ export function CreateSessionForm() {
                 type="submit"
                 size="default"
                 className="w-full"
-                disabled={isSubmitting || isLoading}
+                disabled={isSubmitting || isLoading || !selectedCategory}
               >
                 {isSubmitting ? "Запускаю ожидание…" : "Начать ждать"}
               </Button>
               <p className="text-center text-[12px] leading-5 text-muted-foreground">
-                Потом появится таймер и несколько похожих ожиданий рядом.
+                {selectedCategory
+                  ? "Потом появится таймер и несколько похожих ожиданий рядом."
+                  : "Сначала выбери категорию, потом начни ждать."}
               </p>
             </div>
           </form>

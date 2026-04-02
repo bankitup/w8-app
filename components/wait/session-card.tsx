@@ -16,7 +16,7 @@ export function SessionCard({
   now: number;
 }) {
   const isFinished = session.status === "finished";
-  const category = resolveWaitCategory(session.moodTags);
+  const category = resolveWaitCategory(session.moodTags, session.categoryKey);
 
   return (
     <Card
