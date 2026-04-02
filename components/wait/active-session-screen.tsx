@@ -5,10 +5,12 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
 import { AppShell } from "@/components/app-shell";
+import { CategoryChip } from "@/components/category-chip";
 import { FinishSessionDialog } from "@/components/wait/finish-session-dialog";
 import { SessionCard } from "@/components/wait/session-card";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { resolveWaitCategory } from "@/lib/categories";
 import { useW8 } from "@/lib/data/use-w8";
 import { formatStartedLabel, formatWaitDuration } from "@/lib/time";
 
@@ -45,6 +47,9 @@ export function ActiveSessionScreen() {
   const activeSession = snapshot?.activeSession ?? null;
 
   const sectionMap = useMemo(() => snapshot?.feed ?? null, [snapshot]);
+  const activeCategory = activeSession
+    ? resolveWaitCategory(activeSession.moodTags)
+    : null;
 
   async function handleFinish(message: string) {
     finishSession(message);
@@ -76,7 +81,7 @@ export function ActiveSessionScreen() {
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-sm leading-6 text-muted-foreground">
-                Начни новую короткую запись, и лента снова соберётся вокруг неё.
+                Начни новую короткую запись, и рядом снова появятся похожие ожидания.
               </p>
               <Link href="/start" className={`${buttonVariants()} w-full`}>
                 Начать ждать
@@ -90,39 +95,43 @@ export function ActiveSessionScreen() {
 
   return (
     <AppShell>
-      <div className="flex flex-1 flex-col gap-5">
-        <header className="space-y-2 pt-2 animate-fade-in">
+      <div className="flex flex-1 flex-col gap-4">
+        <header className="space-y-2 pt-1 animate-fade-in">
           <div className="flex items-center justify-between">
             <Link href="/" className="inline-flex text-sm text-muted-foreground transition hover:text-foreground">
               ← Главная
             </Link>
-            <p className="text-xs uppercase tracking-[0.22em] text-muted-foreground">W8</p>
           </div>
-          <h1 className="font-serif text-3xl leading-tight">Текущее ожидание</h1>
+          <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+            W8 - stuck together
+          </p>
+          <h1 className="font-serif text-[30px] leading-tight">Текущее ожидание</h1>
         </header>
 
-        <Card className="animate-fade-in overflow-hidden border-primary/[0.12] bg-[#151210]/95">
-          <CardHeader>
+        <Card className="animate-fade-in overflow-hidden border-primary/[0.12]">
+          <CardHeader className="space-y-2">
             <CardDescription>{formatStartedLabel(activeSession.startedAt)}</CardDescription>
-            <CardTitle className="text-[18px] text-muted-foreground">Сейчас</CardTitle>
+            {activeCategory ? (
+              <CategoryChip category={activeCategory} compact className="w-fit" />
+            ) : null}
           </CardHeader>
-          <CardContent className="space-y-5">
-            <p className="text-center font-serif text-[42px] leading-none text-primary">
+          <CardContent className="space-y-3.5">
+            <p className="font-serif text-[34px] leading-none text-foreground">
               {formatWaitDuration(activeSession.startedAt, now)}
             </p>
-            <p className="text-center text-base leading-7 text-foreground/92">
+            <p className="text-base leading-7 text-foreground/92">
               {activeSession.message}
             </p>
           </CardContent>
         </Card>
 
-        <div className="space-y-5 pb-4">
+        <div className="space-y-4 pb-3">
           {FEED_SECTIONS.map((section) => {
             const sessions = sectionMap[section.key];
 
             return (
-              <section key={section.key} className="space-y-3 animate-fade-in">
-                <h2 className="px-1 text-xs uppercase tracking-[0.24em] text-muted-foreground">
+              <section key={section.key} className="space-y-2.5 animate-fade-in">
+                <h2 className="px-1 text-[13px] font-medium text-muted-foreground">
                   {section.title}
                 </h2>
                 <div className="space-y-3">
@@ -135,8 +144,8 @@ export function ActiveSessionScreen() {
           })}
         </div>
 
-        <div className="sticky bottom-[calc(env(safe-area-inset-bottom)+12px)] mt-auto animate-fade-in rounded-[28px] border border-white/[0.06] bg-background/88 p-3 backdrop-blur">
-          <Button size="lg" variant="secondary" className="w-full" onClick={() => setFinishOpen(true)}>
+        <div className="sticky bottom-[calc(env(safe-area-inset-bottom)+10px)] mt-auto animate-fade-in rounded-[24px] border border-border bg-[rgba(252,247,241,0.9)] p-2.5 backdrop-blur">
+          <Button size="default" variant="secondary" className="w-full" onClick={() => setFinishOpen(true)}>
             Завершить ожидание
           </Button>
         </div>

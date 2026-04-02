@@ -16,7 +16,7 @@ const DialogOverlay = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Overlay
     ref={ref}
-    className={cn("fixed inset-0 z-50 bg-black/60 backdrop-blur-sm", className)}
+    className={cn("fixed inset-0 z-50 bg-[rgba(88,64,46,0.12)] backdrop-blur-[2px]", className)}
     {...props}
   />
 ));
@@ -32,14 +32,14 @@ const DialogContent = React.forwardRef<
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        "fixed bottom-0 left-0 right-0 z-50 mx-auto w-full max-w-md rounded-t-[32px] border border-border/70 bg-card px-5 pb-[calc(env(safe-area-inset-bottom)+20px)] pt-6 text-card-foreground shadow-glow animate-sheet-in",
+        "fixed bottom-0 left-0 right-0 z-50 mx-auto w-full max-w-md rounded-t-[28px] border border-border bg-card px-5 pb-[calc(env(safe-area-inset-bottom)+20px)] pt-5 text-card-foreground shadow-[0_-6px_24px_rgba(75,53,36,0.08)] animate-sheet-in",
         className
       )}
       {...props}
     >
-      <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-white/10" />
+      <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-border" />
       {children}
-      <DialogPrimitive.Close className="absolute right-5 top-5 rounded-full bg-white/5 px-2.5 py-1 text-sm text-muted-foreground transition hover:bg-white/10 hover:text-foreground">
+      <DialogPrimitive.Close className="absolute right-5 top-4 rounded-full bg-muted px-2.5 py-1 text-sm text-muted-foreground transition hover:bg-accent hover:text-foreground">
         <span aria-hidden>×</span>
         <span className="sr-only">Закрыть</span>
       </DialogPrimitive.Close>

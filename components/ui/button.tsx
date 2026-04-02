@@ -11,17 +11,17 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-primary text-primary-foreground shadow-[0_8px_28px_rgba(255,168,84,0.14)] hover:bg-primary/92",
+          "bg-primary text-primary-foreground hover:bg-primary/95",
         secondary:
-          "bg-secondary/90 text-secondary-foreground hover:bg-secondary",
-        ghost: "bg-transparent text-foreground hover:bg-white/5",
+          "border border-border bg-card text-secondary-foreground hover:bg-accent",
+        ghost: "bg-transparent text-foreground hover:bg-black/[0.04]",
         outline:
-          "border border-border bg-transparent text-foreground hover:border-primary/40 hover:bg-white/5"
+          "border border-border bg-transparent text-foreground hover:border-primary/40 hover:bg-accent"
       },
       size: {
-        default: "h-12 px-5",
+        default: "h-11 px-[18px]",
         sm: "h-10 px-4 text-xs",
-        lg: "h-14 px-6 text-[15px]"
+        lg: "h-12 px-5 text-[15px]"
       }
     },
     defaultVariants: {

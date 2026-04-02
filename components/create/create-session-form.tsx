@@ -6,6 +6,7 @@ import { useState } from "react";
 import type { FormEvent } from "react";
 
 import { AppShell } from "@/components/app-shell";
+import { CategoryChip } from "@/components/category-chip";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Card,
@@ -15,6 +16,7 @@ import {
   CardTitle
 } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
+import { CREATE_CATEGORY_PRESETS, getWaitCategory } from "@/lib/categories";
 import { useW8 } from "@/lib/data/use-w8";
 import { formatStartedLabel } from "@/lib/time";
 
@@ -51,12 +53,15 @@ export function CreateSessionForm() {
 
   return (
     <AppShell>
-      <div className="flex flex-1 flex-col gap-4">
-        <header className="space-y-3 pt-2 animate-fade-in">
+      <div className="flex flex-1 flex-col gap-3.5">
+        <header className="space-y-2 pt-1 animate-fade-in">
           <Link href="/" className="inline-flex text-sm text-muted-foreground transition hover:text-foreground">
             ← Назад
           </Link>
-          <h1 className="max-w-[12ch] font-serif text-4xl leading-tight">
+          <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+            W8 - stuck together
+          </p>
+          <h1 className="max-w-[12ch] font-serif text-[32px] leading-tight">
             Что ты сейчас ждёшь?
           </h1>
           <p className="max-w-[32ch] text-sm leading-6 text-muted-foreground">
@@ -79,12 +84,16 @@ export function CreateSessionForm() {
           </Card>
         ) : (
           <form onSubmit={handleSubmit} className="flex flex-1 flex-col gap-4">
-            <Card className="animate-fade-in bg-[#151210]/92">
-              <CardHeader>
-                <CardDescription>Например</CardDescription>
-                <CardTitle className="text-[24px]">
-                  Жду ответ после собеседования и делаю вид, что не проверяю почту.
-                </CardTitle>
+            <Card className="animate-fade-in">
+              <CardHeader className="pb-3">
+                <CardDescription>Чаще всего ждут</CardDescription>
+                <div className="grid grid-cols-3 gap-2 pt-1">
+                  {CREATE_CATEGORY_PRESETS.map((key) => {
+                    const category = getWaitCategory(key);
+
+                    return <CategoryChip key={key} category={category} />;
+                  })}
+                </div>
               </CardHeader>
               <CardContent className="space-y-3">
                 <Textarea
@@ -94,25 +103,25 @@ export function CreateSessionForm() {
                   placeholder="Жду звонок после анализов и пытаюсь не додумывать лишнего."
                 />
                 <div className="flex items-center justify-between px-1">
-                  <p className="text-xs leading-5 text-muted-foreground">
+                  <p className="text-[12px] leading-5 text-muted-foreground">
                     Без ссылок и длинных историй.
                   </p>
-                  <p className="text-xs text-muted-foreground">{remaining}</p>
+                  <p className="text-[12px] text-muted-foreground">{remaining}</p>
                 </div>
                 {error ? <p className="text-sm text-[#ff9d89]">{error}</p> : null}
               </CardContent>
             </Card>
 
-            <div className="sticky bottom-[calc(env(safe-area-inset-bottom)+12px)] mt-auto space-y-3 rounded-[28px] border border-white/[0.06] bg-background/88 p-3 backdrop-blur">
+            <div className="sticky bottom-[calc(env(safe-area-inset-bottom)+10px)] mt-auto space-y-2 rounded-[24px] border border-border bg-[rgba(252,247,241,0.9)] p-2.5 backdrop-blur">
               <Button
                 type="submit"
-                size="lg"
+                size="default"
                 className="w-full"
                 disabled={isSubmitting || isLoading}
               >
                 {isSubmitting ? "Запускаю ожидание…" : "Начать ждать"}
               </Button>
-              <p className="text-center text-xs leading-5 text-muted-foreground">
+              <p className="text-center text-[12px] leading-5 text-muted-foreground">
                 Потом появится таймер и несколько похожих ожиданий рядом.
               </p>
             </div>

@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   },
   appleWebApp: {
     capable: true,
-    statusBarStyle: "black-translucent",
+    statusBarStyle: "default",
     title: "W8"
   },
   formatDetection: {
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#120f0d",
+  themeColor: "#fcf7f1",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
@@ -49,7 +49,7 @@ export default function RootLayout({
   children: ReactNode;
 }>) {
   return (
-    <html lang="ru" className="dark">
+    <html lang="ru">
       <body className={`${fontSans.variable} ${fontSerif.variable}`}>
         <PWAProvider>{children}</PWAProvider>
       </body>

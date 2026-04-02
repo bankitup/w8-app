@@ -21,29 +21,31 @@ export function LandingScreen() {
 
   return (
     <AppShell>
-      <div className="flex flex-1 flex-col gap-4">
-        <header className="animate-fade-in space-y-3 pt-2">
-          <p className="text-xs uppercase tracking-[0.24em] text-muted-foreground">W8</p>
-          <h1 className="max-w-[10ch] font-serif text-[42px] leading-[0.96] text-balance">
-            Маленькая вещь, чтобы переждать.
+      <div className="flex flex-1 flex-col gap-3.5">
+        <header className="animate-fade-in space-y-2 pt-1">
+          <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+            W8 - stuck together
+          </p>
+          <h1 className="max-w-[11ch] font-serif text-[34px] leading-[1.02] text-balance">
+            Небольшая вещь, чтобы переждать.
           </h1>
-          <p className="max-w-[28ch] text-sm leading-6 text-muted-foreground">
-            Одна запись. Один таймер. Несколько похожих ожиданий рядом.
+          <p className="max-w-[29ch] text-sm leading-6 text-muted-foreground">
+            Короткая запись, таймер и несколько похожих ожиданий рядом.
           </p>
         </header>
 
-        <Card className="animate-fade-in bg-[#151210]/92">
+        <Card className="animate-fade-in">
           <CardHeader>
-            <CardDescription>Сейчас внутри</CardDescription>
-            <CardTitle className="text-[28px]">Активное ожидание, таймер и спокойная подборка рядом.</CardTitle>
+            <CardDescription>Как устроено</CardDescription>
+            <CardTitle className="text-[24px]">Одна активная запись за раз.</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="space-y-2.5">
             <p className="text-sm leading-6 text-foreground/88">
-              Без профилей, без сообщений, без шума. Просто короткая фраза о том,
-              что тянется прямо сейчас.
+              Без профилей, без сообщений, без лишнего шума. Просто короткая фраза
+              о том, что тянется прямо сейчас.
             </p>
-            <p className="text-xs leading-5 text-muted-foreground">
-              Похожие на тебя. Дольше всех ждут. Смешно сейчас. Кто только что дождался.
+            <p className="text-[13px] leading-5 text-muted-foreground">
+              Похожие на тебя, дольше всех ждут, смешно сейчас и кто только что дождался.
             </p>
           </CardContent>
         </Card>
@@ -56,11 +58,11 @@ export function LandingScreen() {
                   ? formatFinishedLabel(lastFinished.finishedAt)
                   : "Финал сохранён"}
               </CardDescription>
-              <CardTitle className="text-[24px]">Последний финал</CardTitle>
+              <CardTitle className="text-[22px]">Последний финал</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent className="space-y-2.5">
               <p className="text-sm leading-6 text-foreground/86">{lastFinished.message}</p>
-              <p className="text-sm leading-6 text-foreground">{lastFinished.finalMessage}</p>
+              <p className="text-sm leading-6 text-foreground/94">{lastFinished.finalMessage}</p>
             </CardContent>
           </Card>
         ) : null}
@@ -69,7 +71,7 @@ export function LandingScreen() {
           <Card className="animate-fade-in">
             <CardHeader>
               <CardDescription>{formatStartedLabel(activeSession.startedAt)}</CardDescription>
-              <CardTitle className="text-[24px]">Ожидание уже идёт.</CardTitle>
+              <CardTitle className="text-[22px]">Ожидание уже идёт.</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-sm leading-6 text-foreground/88">{activeSession.message}</p>
@@ -79,11 +81,11 @@ export function LandingScreen() {
             </CardContent>
           </Card>
         ) : (
-          <div className="sticky bottom-[calc(env(safe-area-inset-bottom)+12px)] mt-auto animate-fade-in space-y-3 rounded-[28px] border border-white/[0.06] bg-background/88 p-3 backdrop-blur">
+          <div className="sticky bottom-[calc(env(safe-area-inset-bottom)+10px)] mt-auto animate-fade-in space-y-2 rounded-[24px] border border-border bg-[rgba(252,247,241,0.88)] p-2.5 backdrop-blur">
             <Link href="/start" className={`${buttonVariants({ size: "lg" })} w-full`}>
               Начать ждать
             </Link>
-            <p className="text-center text-xs leading-5 text-muted-foreground">
+            <p className="px-2 text-center text-[12px] leading-5 text-muted-foreground">
               {isLoading
                 ? "Читаю твою локальную историю…"
                 : "Ничего лишнего: только короткий текст и общее чувство времени."}
