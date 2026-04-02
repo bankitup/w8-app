@@ -12,7 +12,13 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { resolveWaitCategory } from "@/lib/categories";
 import { useW8 } from "@/lib/data/use-w8";
-import { formatStartedLabel, formatWaitDuration } from "@/lib/time";
+import {
+  formatConfirmCooldown,
+  formatLastConfirmedLabel,
+  formatStartedLabel,
+  formatWaitDuration,
+  getConfirmCooldownMs
+} from "@/lib/time";
 
 const FEED_SECTIONS = [
   {
@@ -35,12 +41,12 @@ const FEED_SECTIONS = [
 
 export function ActiveSessionScreen() {
   const router = useRouter();
-  const { snapshot, isLoading, finishSession } = useW8();
+  const { snapshot, isLoading, confirmStillWaiting, finishSession } = useW8();
   const [now, setNow] = useState(() => Date.now());
   const [finishOpen, setFinishOpen] = useState(false);
 
   useEffect(() => {
-    const timer = window.setInterval(() => setNow(Date.now()), 30000);
+    const timer = window.setInterval(() => setNow(Date.now()), 1000);
     return () => window.clearInterval(timer);
   }, []);
 
@@ -50,6 +56,22 @@ export function ActiveSessionScreen() {
   const activeCategory = activeSession
     ? resolveWaitCategory(activeSession.moodTags, activeSession.categoryKey)
     : null;
+  const confirmCooldownMs = activeSession
+    ? getConfirmCooldownMs(activeSession.lastConfirmedAt, now)
+    : 0;
+  const canConfirm = confirmCooldownMs === 0;
+  const confirmMessage =
+    activeSession?.lastConfirmedAt && confirmCooldownMs > 50_000
+      ? "Подтверждено только что"
+      : formatConfirmCooldown(confirmCooldownMs);
+
+  function handleConfirmStillWaiting() {
+    if (!canConfirm) {
+      return;
+    }
+
+    confirmStillWaiting();
+  }
 
   async function handleFinish(message: string) {
     finishSession(message);
@@ -122,6 +144,37 @@ export function ActiveSessionScreen() {
             <p className="text-base leading-7 text-foreground/92">
               {activeSession.message}
             </p>
+            <div className="space-y-1.5 rounded-[18px] bg-muted/70 px-3.5 py-3 text-[13px] text-muted-foreground">
+              <div className="flex items-center justify-between gap-3">
+                <span>Началось</span>
+                <span className="text-right text-foreground/78">
+                  {formatStartedLabel(activeSession.startedAt).replace("Началось ", "")}
+                </span>
+              </div>
+              <div className="flex items-center justify-between gap-3">
+                <span>Последнее подтверждение</span>
+                <span className="text-right text-foreground/78">
+                  {formatLastConfirmedLabel(activeSession.lastConfirmedAt, now).replace(
+                    "Подтвердил ",
+                    ""
+                  )}
+                </span>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full"
+                onClick={handleConfirmStillWaiting}
+                disabled={!canConfirm}
+              >
+                Всё ещё жду
+              </Button>
+              <p className="px-1 text-[12px] leading-5 text-muted-foreground">
+                {confirmMessage || "Подтверждай, если ожидание всё ещё продолжается."}
+              </p>
+            </div>
           </CardContent>
         </Card>
 

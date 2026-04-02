@@ -25,6 +25,12 @@ export function useW8() {
     return next;
   }, []);
 
+  const confirmStillWaiting = useCallback(() => {
+    const next = getW8Repository().confirmStillWaiting();
+    setSnapshot(next);
+    return next;
+  }, []);
+
   const finishSession = useCallback((message: string) => {
     const next = getW8Repository().finishSession(message);
     setSnapshot(next);
@@ -36,6 +42,7 @@ export function useW8() {
     isLoading: snapshot === null,
     refresh,
     createSession,
+    confirmStillWaiting,
     finishSession
   };
 }

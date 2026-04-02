@@ -26,6 +26,7 @@ export interface CreateSessionInput {
 export interface W8Repository {
   getSnapshot(): ViewerSnapshot;
   createSession(input: CreateSessionInput): ViewerSnapshot;
+  confirmStillWaiting(): ViewerSnapshot;
   finishSession(finalMessage: string): ViewerSnapshot;
 }
 
@@ -279,6 +280,24 @@ function createLocalRepository(): W8Repository {
           startedAt: new Date().toISOString(),
           moodTags,
           tone: inferTone(moodTags)
+        }
+      };
+
+      saveState(nextState);
+      return buildSnapshot(nextState);
+    },
+    confirmStillWaiting() {
+      const current = loadState();
+
+      if (!current.activeSession) {
+        throw new Error("Сейчас нет активного ожидания.");
+      }
+
+      const nextState: PersistedState = {
+        ...current,
+        activeSession: {
+          ...current.activeSession,
+          lastConfirmedAt: new Date().toISOString()
         }
       };
 

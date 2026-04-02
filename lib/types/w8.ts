@@ -10,6 +10,7 @@ export interface WaitingSession {
   message: string;
   finalMessage?: string;
   startedAt: string;
+  lastConfirmedAt?: string;
   finishedAt?: string;
   moodTags: string[];
   tone?: "soft" | "anxious" | "funny" | "hopeful" | "tired";

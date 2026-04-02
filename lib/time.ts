@@ -10,6 +10,8 @@ const dayTimeFormatter = new Intl.DateTimeFormat("ru-RU", {
   minute: "2-digit"
 });
 
+export type WaitSignalLevel = "normal" | "long" | "veryLong" | "dayPlus";
+
 function pluralize(
   count: number,
   one: string,
@@ -82,4 +84,74 @@ export function formatFinishedLabel(iso: string, now = Date.now()): string {
 
   const days = Math.floor(hours / 24);
   return `Дождался ${days} ${pluralize(days, "день", "дня", "дней")} назад`;
+}
+
+export function formatLastConfirmedLabel(iso?: string, now = Date.now()): string {
+  if (!iso) {
+    return "Ещё не подтверждал";
+  }
+
+  const minutes = Math.max(0, Math.floor((now - new Date(iso).getTime()) / 60000));
+
+  if (minutes < 1) {
+    return "Подтвердил только что";
+  }
+
+  if (minutes < 60) {
+    return `Подтвердил ${minutes} ${pluralize(minutes, "минуту", "минуты", "минут")} назад`;
+  }
+
+  const hours = Math.floor(minutes / 60);
+
+  if (hours < 24) {
+    return `Подтвердил ${hours} ${pluralize(hours, "час", "часа", "часов")} назад`;
+  }
+
+  const days = Math.floor(hours / 24);
+  return `Подтвердил ${days} ${pluralize(days, "день", "дня", "дней")} назад`;
+}
+
+export function getConfirmCooldownMs(
+  iso?: string,
+  now = Date.now(),
+  cooldownMs = 60_000
+): number {
+  if (!iso) {
+    return 0;
+  }
+
+  const elapsed = now - new Date(iso).getTime();
+  return Math.max(0, cooldownMs - elapsed);
+}
+
+export function formatConfirmCooldown(remainingMs: number): string {
+  const totalSeconds = Math.ceil(remainingMs / 1000);
+
+  if (totalSeconds <= 0) {
+    return "";
+  }
+
+  if (totalSeconds >= 60) {
+    return "Можно подтвердить снова через 1 мин";
+  }
+
+  return `Можно подтвердить снова через ${totalSeconds} ${pluralize(totalSeconds, "секунду", "секунды", "секунд")}`;
+}
+
+export function getWaitSignalLevel(iso: string, now = Date.now()): WaitSignalLevel {
+  const minutes = Math.max(1, Math.floor((now - new Date(iso).getTime()) / 60000));
+
+  if (minutes >= 1440) {
+    return "dayPlus";
+  }
+
+  if (minutes >= 720) {
+    return "veryLong";
+  }
+
+  if (minutes >= 180) {
+    return "long";
+  }
+
+  return "normal";
 }

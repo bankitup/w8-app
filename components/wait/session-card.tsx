@@ -3,7 +3,12 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { resolveWaitCategory } from "@/lib/categories";
 import { cn } from "@/lib/utils";
-import { formatFinishedLabel, formatStartedLabel, formatWaitDuration } from "@/lib/time";
+import {
+  formatFinishedLabel,
+  formatStartedLabel,
+  formatWaitDuration,
+  getWaitSignalLevel
+} from "@/lib/time";
 import type { WaitingSession } from "@/lib/types/w8";
 
 export function SessionCard({
@@ -17,11 +22,31 @@ export function SessionCard({
 }) {
   const isFinished = session.status === "finished";
   const category = resolveWaitCategory(session.moodTags, session.categoryKey);
+  const waitSignalLevel = getWaitSignalLevel(session.startedAt, now);
+
+  const signalStyles = {
+    normal: {
+      card: "border-border bg-card",
+      time: "text-muted-foreground"
+    },
+    long: {
+      card: "border-l-[3px] border-l-primary/[0.18] bg-card",
+      time: "text-foreground/72"
+    },
+    veryLong: {
+      card: "border-l-[3px] border-l-primary/[0.28] bg-[rgba(255,250,245,0.95)]",
+      time: "font-medium text-foreground/82"
+    },
+    dayPlus: {
+      card: "border-l-[3px] border-l-primary/[0.4] bg-[rgba(255,248,240,0.98)]",
+      time: "font-medium text-primary"
+    }
+  }[waitSignalLevel];
 
   return (
     <Card
       className={cn(
-        "border-border bg-card",
+        signalStyles.card,
         compact ? "rounded-[20px]" : "rounded-[24px]"
       )}
     >
@@ -34,7 +59,7 @@ export function SessionCard({
             <span>{category.label}</span>
             {isFinished ? <Badge variant="muted">финал</Badge> : null}
           </div>
-          <p className="text-right text-xs leading-5 text-muted-foreground">
+          <p className={cn("text-right text-xs leading-5", signalStyles.time)}>
             {isFinished && session.finishedAt
               ? formatFinishedLabel(session.finishedAt, now)
               : formatWaitDuration(session.startedAt, now)}
