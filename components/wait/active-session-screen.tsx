@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
 import { AppShell } from "@/components/app-shell";
@@ -33,9 +33,9 @@ const FEED_SECTIONS = [
 
 export function ActiveSessionScreen() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const { snapshot, isLoading, finishSession } = useW8();
   const [now, setNow] = useState(() => Date.now());
+  const [finishOpen, setFinishOpen] = useState(false);
 
   useEffect(() => {
     const timer = window.setInterval(() => setNow(Date.now()), 30000);
@@ -43,13 +43,8 @@ export function ActiveSessionScreen() {
   }, []);
 
   const activeSession = snapshot?.activeSession ?? null;
-  const finishOpen = searchParams.get("finish") === "1";
 
   const sectionMap = useMemo(() => snapshot?.feed ?? null, [snapshot]);
-
-  function setFinishOpen(nextOpen: boolean) {
-    router.replace(nextOpen ? "/wait?finish=1" : "/wait");
-  }
 
   async function handleFinish(message: string) {
     finishSession(message);
